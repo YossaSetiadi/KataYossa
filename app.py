@@ -18,7 +18,7 @@ genai.configure(api_key=api_key)
 # 3. Whitelist Email Pengguna Terdaftar & Kuota Harian
 ALLOWED_USERS = {
     "yossa.setiadi@gmail.com": {"name": "Yossa Setiadi", "daily_limit": 999},
-    "budi.santoso@gmail.com": {"name": "Budi Santoso", "daily_limit": 20},
+    "adrianluis.testing@gmail.com": {"name": "Budi Santoso", "daily_limit": 20},
 }
 
 # 4. Sistem Login Email Personal
