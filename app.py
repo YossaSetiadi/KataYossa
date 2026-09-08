@@ -102,7 +102,7 @@ ATURAN PERLINDUNGAN KERAHASIAAN & PENOLAKAN:
 
 # Inisialisasi Model Gemini Stabil
 model = genai.GenerativeModel(
-    model_name="gemini-2.5-flash", system_instruction=SYSTEM_INSTRUCTION
+    model_name="gemini-3.6-flash", system_instruction=SYSTEM_INSTRUCTION
 )
 
 if "messages" not in st.session_state:
