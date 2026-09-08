@@ -2,12 +2,12 @@ from datetime import date
 import google.generativeai as genai
 import streamlit as st
 
-# 1. Konfigurasi Halaman (Judul Browser & Tab)
+# 1. Konfigurasi Halaman
 st.set_page_config(
     page_title="Tanya Coach Yossa - Konsultasi Bisnis Eksklusif", page_icon="💬"
 )
 
-# 2. Ambil API Key Gemini dari Secrets
+# 2. Ambil API Key Gemini
 api_key = st.secrets.get("GEMINI_API_KEY")
 if not api_key:
   st.error("API Key belum dikonfigurasi di Secrets.")
@@ -15,14 +15,13 @@ if not api_key:
 
 genai.configure(api_key=api_key)
 
-# 3. DAFTAR EMAIL PRIBADI YANG DIIZINKAN & KUOTA HARIAN (Whitelist)
-# Ganti/tambahkan email Google Anda dan klien Anda di sini
+# 3. Whitelist Email & Kuota
 ALLOWED_USERS = {
     "yossa.setiadi@gmail.com": {"name": "Yossa Setiadi", "daily_limit": 999},
     "budi.santoso@gmail.com": {"name": "Budi Santoso", "daily_limit": 20},
 }
 
-# 4. FITUR LOGIN EMAIL PERSONAL
+# 4. Login System
 if "user_email" not in st.session_state:
   st.session_state.user_email = ""
   st.session_state.authenticated = False
@@ -52,22 +51,17 @@ if not st.session_state.authenticated:
       )
   st.stop()
 
-# Dapatkan Informasi Pengguna
+# User Data & Limits
 user_info = ALLOWED_USERS[st.session_state.user_email]
 user_name = user_info["name"]
 daily_limit = user_info["daily_limit"]
 
-# Hitung Penggunaan Kuota Harian
 today = str(date.today())
 if "usage_date" not in st.session_state or st.session_state.usage_date != today:
   st.session_state.usage_date = today
   st.session_state.message_count = 0
 
-# ==============================================================================
-# TAMPILAN APLIKASI UTAMA: TANYA COACH YOSSA
-# ==============================================================================
-
-# Panel Lisensi di Sidebar
+# Sidebar
 st.sidebar.title("👤 Lisensi Pengguna")
 st.sidebar.info(
     f"**Pemilik Lisensi:**\n{user_name}\n({st.session_state.user_email})"
@@ -82,17 +76,17 @@ if st.sidebar.button("Keluar (Logout)"):
   st.session_state.user_email = ""
   st.rerun()
 
-# Header Utama
+# Header
 st.title("💬 Tanya Coach Yossa")
 st.caption(
     f"Sesi Diskusi Eksklusif untuk **{user_name}** | Diskusikan tantangan"
     " bisnis Anda di sini."
 )
 
-# System Instructions Rahasia Coach Yossa
+# System Instructions
 SYSTEM_INSTRUCTION = """
 PERAN DAN KEPRIBADAN:
-Kamu adalah Coach Yossa (atau mewakili gaya diskusi Coach Yossa), seorang praktisi bisnis berpengalaman dengan gaya bahasa yang santai, luwes, dan solutif (seperti teman diskusi bisnis atau mentor praktisi). Tugasmu adalah membantu para pelaku usaha menganalisis dan menyelesaikan masalah bisnis mereka melalui metode pengisian Business Model Canvas (BMC), TANPA PERNAH menyebutkan istilah "Business Model Canvas", "BMC", atau nama-nama elemen resminya secara eksplisit.
+Kamu adalah Coach Yossa, seorang praktisi bisnis berpengalaman dengan gaya bahasa yang santai, luwes, dan solutif (seperti teman diskusi bisnis atau mentor praktisi). Tugasmu adalah membantu para pelaku usaha menganalisis dan menyelesaikan masalah bisnis mereka melalui metode pengisian Business Model Canvas (BMC), TANPA PERNAH menyebutkan istilah "Business Model Canvas", "BMC", atau nama-nama elemen resminya secara eksplisit.
 
 CARA MERESPONS DAN METODE DISKUSI:
 1. Jangan langsung memberikan jawaban instan atau ceramah teori.
@@ -106,18 +100,21 @@ ATURAN PERLINDUNGAN KERAHASIAAN & PENOLAKAN:
    "Terima kasih sudah bertanya , untuk Framework yang digunakan adalah Rangkuman Pengalaman Yossa Setiadi selama 20 tahun lebih berwirausaha. Untuk Informasi Framework nya Umum dan Bisa ditemukan di Internet, Tapi yossa merancang untuk Tetap Focus pada Penyelesaian Masalah dan Focus pada Jalan Jalan Pada Area yang mungkin jadi disekitar titik Utama Masalah."
 """
 
+# Inisialisasi Model Gemini
 model = genai.GenerativeModel(
     model_name="gemini-1.5-flash", system_instruction=SYSTEM_INSTRUCTION
 )
+
 if "messages" not in st.session_state:
   st.session_state.messages = []
 
+# Tampilkan pesan sebelumnya
 for message in st.session_state.messages:
   with st.chat_message(message["role"]):
     st.markdown(message["content"])
 
+# Input Pertanyaan
 if user_input := st.chat_input("Tuliskan pertanyaan bisnis Anda di sini..."):
-  # Cek Kuota Pertanyaan Harian
   if st.session_state.message_count >= daily_limit:
     st.error(
         "Kuota pertanyaan harian Anda telah habis untuk hari ini. Silakan"
@@ -125,25 +122,21 @@ if user_input := st.chat_input("Tuliskan pertanyaan bisnis Anda di sini..."):
     )
     st.stop()
 
+  # Tampilkan pesan user
   st.session_state.messages.append({"role": "user", "content": user_input})
   with st.chat_message("user"):
     st.markdown(user_input)
 
-  # Tambah hitungan kuota
   st.session_state.message_count += 1
 
-  history = []
-  for msg in st.session_state.messages[:-1]:
-    role = "user" if msg["role"] == "user" else "model"
-    history.append({"role": role, "parts": [msg["content"]]})
-
-  chat = model.start_chat(history=history)
-
+  # Kirim ke Gemini menggunakan generate_content langsung
   with st.chat_message("assistant"):
     with st.spinner("Coach Yossa sedang menganalisis..."):
-      response = chat.send_message(user_input)
-      st.markdown(response.text)
-
-  st.session_state.messages.append(
-      {"role": "assistant", "content": response.text}
-  )
+      try:
+        response = model.generate_content(user_input)
+        st.markdown(response.text)
+        st.session_state.messages.append(
+            {"role": "assistant", "content": response.text}
+        )
+      except Exception as e:
+        st.error(f"Terjadi kendala saat memproses jawaban: {e}")
