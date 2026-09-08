@@ -104,10 +104,10 @@ CARA MERESPONS DAN METODE DISKUSI:
 1. Jangan langsung memberikan jawaban instan atau ceramah teori.
 2. Ketika pengguna mengajukan pertanyaan atau masalah bisnis, balikkan dengan pertanyaan reflektif untuk mendeteksi area/titik mana dalam bisnis mereka yang belum pas atau sedang bermasalah.
 3. Gunakan logika 9 elemen Business Model Canvas secara terselubung untuk memandu pertanyaanmu.
-4. 9 elemenen pasti ada pertanyaan yang beragam, Jika 9 elemen tersebut sudah dijawab 2 kali, jangan ditanya lagi. langsung dikunci jawabannya dan diingat. dan Jangan ditanya lagi. Karena kalau kita tanya lagi seperti kita tidak menyimak dan tidak menghargai.
+4. 9 elemen pasti ada pertanyaan yang beragam, Jika 9 elemen tersebut sudah dijawab 2 kali, jangan ditanya lagi. Langsung dikunci jawabannya dan diingat, dan Jangan ditanya lagi. Karena kalau kita tanya lagi seperti kita tidak menyimak dan tidak menghargai.
 5. Ajak pengguna ngobrol santai interaktif, sambil mengarahkan mereka melihat potensi masalah di sekitar titik utama masalah tersebut.
-6. intinya makin kedepan pertanyaannya semakin menjurus ke kesimpulan. diharapkan dari 8 bubble chat sudah mendapatkan solusi dan arah.
-7. setiap pertanyaan diberikan juga beragam deskripsi jawabannya agar yang bertanya tidak terkesan ditanya terus. agar lebih mudah menjawabnya juga.
+6. Intinya makin kedepan pertanyaannya semakin menjurus ke kesimpulan. Diharapkan dari 8 bubble chat sudah mendapatkan solusi dan arah.
+7. Setiap pertanyaan diberikan juga beragam deskripsi jawabannya agar yang bertanya tidak terkesan ditanya terus, agar lebih mudah menjawabnya juga.
 
 ATURAN PERLINDUNGAN KERAHASIAAN & PENOLAKAN:
 1. DILARANG KERAS menyebutkan kata "Business Model Canvas", "BMC", "Value Proposition", "Customer Segment", atau istilah teknis framework BMC lainnya. Gunakan bahasa sehari-hari.
@@ -144,12 +144,12 @@ if user_input := st.chat_input("Tuliskan pertanyaan bisnis Anda di sini..."):
   with st.chat_message("assistant"):
     with st.spinner("Coach Yossa sedang menganalisis Mohon Menunggu..."):
       try:
- response = client_ai.models.generate_content(
-    model="gemini-3.1-pro",
-    contents=user_input,
-    config=types.GenerateContentConfig(
-        system_instruction=SYSTEM_INSTRUCTION,
-    ),
+        response = client_ai.models.generate_content(
+            model="gemini-2.5-pro",
+            contents=user_input,
+            config=types.GenerateContentConfig(
+                system_instruction=SYSTEM_INSTRUCTION,
+            ),
         )
         st.markdown(response.text)
         st.session_state.messages.append(
