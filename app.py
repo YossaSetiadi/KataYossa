@@ -144,12 +144,12 @@ if user_input := st.chat_input("Tuliskan pertanyaan bisnis Anda di sini..."):
   with st.chat_message("assistant"):
     with st.spinner("Coach Yossa sedang menganalisis Mohon Menunggu..."):
       try:
-        response = client_ai.models.generate_content(
-            model="gemini-3.1 Pro",
-            contents=user_input,
-            config=types.GenerateContentConfig(
-                system_instruction=SYSTEM_INSTRUCTION,
-            ),
+ response = client_ai.models.generate_content(
+    model="gemini-3.1-pro",
+    contents=user_input,
+    config=types.GenerateContentConfig(
+        system_instruction=SYSTEM_INSTRUCTION,
+    ),
         )
         st.markdown(response.text)
         st.session_state.messages.append(
