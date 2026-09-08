@@ -143,7 +143,7 @@ if user_input := st.chat_input("Tuliskan pertanyaan bisnis Anda di sini..."):
     with st.spinner("Coach Yossa sedang menganalisis..."):
       try:
         response = client_ai.models.generate_content(
-            model="gemini-3.5-flash",
+            model="gemini-3.6-flash",
             contents=user_input,
             config=types.GenerateContentConfig(
                 system_instruction=SYSTEM_INSTRUCTION,
