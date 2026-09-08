@@ -5,7 +5,7 @@ import streamlit as st
 
 # 1. Konfigurasi Halaman Browser
 st.set_page_config(
-    page_title="Tanya Coach Yossa - Konsultasi Bisnis Eksklusif", page_icon="💬"
+    page_title="Tanya Coach Yossa - Teman Ngobrol Bisnis", page_icon="💬"
 )
 
 # 2. Ambil API Key Gemini dari Secrets Streamlit
