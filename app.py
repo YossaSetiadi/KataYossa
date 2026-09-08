@@ -107,7 +107,7 @@ ATURAN PERLINDUNGAN KERAHASIAAN & PENOLAKAN:
 """
 
 model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash", system_instruction=SYSTEM_INSTRUCTION
+    model_name="gemini-1.5-flash-latest", system_instruction=SYSTEM_INSTRUCTION
 )
 
 if "messages" not in st.session_state:
