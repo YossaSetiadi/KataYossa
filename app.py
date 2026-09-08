@@ -2,12 +2,12 @@ from datetime import date
 import google.generativeai as genai
 import streamlit as st
 
-# 1. Konfigurasi Halaman
+# 1. Konfigurasi Halaman Browser
 st.set_page_config(
     page_title="Tanya Coach Yossa - Konsultasi Bisnis Eksklusif", page_icon="💬"
 )
 
-# 2. Ambil API Key Gemini
+# 2. Ambil API Key Gemini dari Secrets Streamlit
 api_key = st.secrets.get("GEMINI_API_KEY")
 if not api_key:
   st.error("API Key belum dikonfigurasi di Secrets.")
@@ -15,13 +15,13 @@ if not api_key:
 
 genai.configure(api_key=api_key)
 
-# 3. Whitelist Email & Kuota
+# 3. Whitelist Email Pengguna Terdaftar & Kuota Harian
 ALLOWED_USERS = {
     "yossa.setiadi@gmail.com": {"name": "Yossa Setiadi", "daily_limit": 999},
     "budi.santoso@gmail.com": {"name": "Budi Santoso", "daily_limit": 20},
 }
 
-# 4. Login System
+# 4. Sistem Login Email Personal
 if "user_email" not in st.session_state:
   st.session_state.user_email = ""
   st.session_state.authenticated = False
@@ -51,7 +51,7 @@ if not st.session_state.authenticated:
       )
   st.stop()
 
-# User Data & Limits
+# Ambil Informasi Pengguna & Atur Kuota
 user_info = ALLOWED_USERS[st.session_state.user_email]
 user_name = user_info["name"]
 daily_limit = user_info["daily_limit"]
@@ -61,7 +61,7 @@ if "usage_date" not in st.session_state or st.session_state.usage_date != today:
   st.session_state.usage_date = today
   st.session_state.message_count = 0
 
-# Sidebar
+# Tampilan Panel Kiri (Sidebar)
 st.sidebar.title("👤 Lisensi Pengguna")
 st.sidebar.info(
     f"**Pemilik Lisensi:**\n{user_name}\n({st.session_state.user_email})"
@@ -76,14 +76,14 @@ if st.sidebar.button("Keluar (Logout)"):
   st.session_state.user_email = ""
   st.rerun()
 
-# Header
+# Header Utama
 st.title("💬 Tanya Coach Yossa")
 st.caption(
     f"Sesi Diskusi Eksklusif untuk **{user_name}** | Diskusikan tantangan"
     " bisnis Anda di sini."
 )
 
-# System Instructions
+# System Instructions Rahasia Coach Yossa
 SYSTEM_INSTRUCTION = """
 PERAN DAN KEPRIBADAN:
 Kamu adalah Coach Yossa, seorang praktisi bisnis berpengalaman dengan gaya bahasa yang santai, luwes, dan solutif (seperti teman diskusi bisnis atau mentor praktisi). Tugasmu adalah membantu para pelaku usaha menganalisis dan menyelesaikan masalah bisnis mereka melalui metode pengisian Business Model Canvas (BMC), TANPA PERNAH menyebutkan istilah "Business Model Canvas", "BMC", atau nama-nama elemen resminya secara eksplisit.
@@ -100,20 +100,20 @@ ATURAN PERLINDUNGAN KERAHASIAAN & PENOLAKAN:
    "Terima kasih sudah bertanya , untuk Framework yang digunakan adalah Rangkuman Pengalaman Yossa Setiadi selama 20 tahun lebih berwirausaha. Untuk Informasi Framework nya Umum dan Bisa ditemukan di Internet, Tapi yossa merancang untuk Tetap Focus pada Penyelesaian Masalah dan Focus pada Jalan Jalan Pada Area yang mungkin jadi disekitar titik Utama Masalah."
 """
 
-# Inisialisasi Model Gemini
+# Inisialisasi Model Gemini Stabil
 model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash", system_instruction=SYSTEM_INSTRUCTION
+    model_name="gemini-2.0-flash", system_instruction=SYSTEM_INSTRUCTION
 )
 
 if "messages" not in st.session_state:
   st.session_state.messages = []
 
-# Tampilkan pesan sebelumnya
+# Tampilkan riwayat pesan di layar
 for message in st.session_state.messages:
   with st.chat_message(message["role"]):
     st.markdown(message["content"])
 
-# Input Pertanyaan
+# Input Pertanyaan Pengguna
 if user_input := st.chat_input("Tuliskan pertanyaan bisnis Anda di sini..."):
   if st.session_state.message_count >= daily_limit:
     st.error(
@@ -129,7 +129,7 @@ if user_input := st.chat_input("Tuliskan pertanyaan bisnis Anda di sini..."):
 
   st.session_state.message_count += 1
 
-  # Kirim ke Gemini menggunakan generate_content langsung
+  # Kirim langsung ke Gemini AI
   with st.chat_message("assistant"):
     with st.spinner("Coach Yossa sedang menganalisis..."):
       try:
@@ -139,4 +139,7 @@ if user_input := st.chat_input("Tuliskan pertanyaan bisnis Anda di sini..."):
             {"role": "assistant", "content": response.text}
         )
       except Exception as e:
-        st.error(f"Terjadi kendala saat memproses jawaban: {e}")
+        st.error(
+            f"Terjadi kendala saat memproses jawaban: {e}. Silakan coba kirim"
+            " ulang."
+        )
