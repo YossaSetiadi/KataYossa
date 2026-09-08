@@ -149,7 +149,6 @@ if user_input := st.chat_input("Tuliskan pertanyaan bisnis Anda di sini..."):
             contents=user_input,
             config=types.GenerateContentConfig(
                 system_instruction=SYSTEM_INSTRUCTION,
-            ),
         )
         st.markdown(response.text)
         st.session_state.messages.append(
