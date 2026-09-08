@@ -142,10 +142,10 @@ if user_input := st.chat_input("Tuliskan pertanyaan bisnis Anda di sini..."):
 
   # Kirim ke Gemini AI
   with st.chat_message("assistant"):
-    with st.spinner("Coach Yossa sedang menganalisis..."):
+    with st.spinner("Coach Yossa sedang menganalisis Mohon Menunggu..."):
       try:
         response = client_ai.models.generate_content(
-            model="gemini-3.1-Pro",
+            model="gemini-3.1 Pro",
             contents=user_input,
             config=types.GenerateContentConfig(
                 system_instruction=SYSTEM_INSTRUCTION,
