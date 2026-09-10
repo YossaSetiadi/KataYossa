@@ -19,7 +19,7 @@ client_ai = genai.Client(api_key=api_key)
 # 3. Whitelist Email Pengguna & Batas Kuota Harian
 ALLOWED_USERS = {
     "yossa.setiadi@gmail.com": {"name": "Yossa Setiadi", "daily_limit": 999},
-    "testingJordy": {"name": "Jordy Sidharta", "daily_limit": 10},
+    "testingJordy@gmail.com": {"name": "Jordy Sidharta", "daily_limit": 10},
 }
 
 # Inisialisasi Database Kuota Harian Berbasis Tanggal di Browser State
